@@ -1,4 +1,5 @@
 
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,8 +21,8 @@ public class notes {
 
     public static void main(String[] args) throws Exception {
     	
-        Sequence sequence = MidiSystem.getSequence(new File("test2.mid"));
-        File arquivo = new File( "carta.txt" );
+        Sequence sequence = MidiSystem.getSequence(new File("borodin.mid"));
+        File arquivo = new File( "carta_borodin.txt" );
         arquivo.createNewFile();
         FileWriter fw = new FileWriter( arquivo );
         BufferedWriter bw = new BufferedWriter( fw );
@@ -32,6 +33,7 @@ public class notes {
         long tickAtual = 0;
         long tickAux = 0;
         long duracao = 0;
+        double freq = 0;
         
         //pega as trilhas
         for (Track track :  sequence.getTracks()) {
@@ -51,7 +53,7 @@ public class notes {
                 
                 if (flag == 0) {
           
-                	bw.write( "instrumento" + trackNumber + " ");
+                	bw.write( "(instrumento" + trackNumber + " ");
                 	bw.write(tickAtual + " ");
                 	
             }
@@ -75,10 +77,27 @@ public class notes {
                         int note = key % 12;
                         String noteName = NOTE_NAMES[note];
                         int velocity = sm.getData2();
-                        System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity);
+                        
+                        if(note < 8 ) {
+                        float x = (note + 3);
+                        double lala = x/12;
+                        double lala2 = 110*((Math.pow(2, octave))/4);
+                        freq =  lala2 * Math.pow(2 , lala);
+                        }
+                        else {
+                        	float x = (note + 3);
+                            double lala = x/12;
+                            double lala2 = 110*((Math.pow(2, (octave-1)))/4);
+                            freq =  lala2 * Math.pow(2 , lala);
+                        }
+                        System.out.println("Note off, " + noteName + octave + " key=" + key + " velocity: " + velocity + " freq= " + freq);
+                        
+                        
                         duracao = tickAtual - tickAux;
                     
                        bw.write(duracao + " ");
+                       bw.write(freq + " ");
+                       bw.write("1.0)");
                         bw.newLine();
                         flag = 0;
                     } else {
